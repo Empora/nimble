@@ -16,6 +16,7 @@
  */
 package grails.plugins.nimble.core
 
+import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
 import org.apache.shiro.SecurityUtils
 
 /**
@@ -78,16 +79,16 @@ class NimbleService {
             }
         }
 
-        /**
-         * This is some terribly hacky shit to fix a major problem once Nimble
-         * was upgraded to use 1.1.1 (possibly groovy not grails specific)
-         *
-         * TODO: remove this ugly ugly piece of crud when 1.1.2 or 1.2 comes out
-         * BUG: http://jira.codehaus.org/browse/GRAILS-4580
-         
-        def domains = grailsApplication.getArtefacts("Domain")
-        for (domain in domains) {
-            domain.clazz.count()
-        }*/
+		/**
+		 * This was a hack to work around BUG: http://jira.codehaus.org/browse/GRAILS-4580
+		 * It's now only applied for older releases of Grails as it's fixed in 1.1.2 and really spanks InnoDB on app startup
+		 */
+		if ( GrailsPluginUtils.isVersionGreaterThan( grailsApplication.metadata['app.grails.version'], "1.1.2" ) )
+		{
+			def domains = grailsApplication.getArtefacts("Domain")
+			for (domain in domains) {
+				domain.clazz.count()
+			}
+		}
     }
 }
